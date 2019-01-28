@@ -81,6 +81,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.HashMap;
 import java.util.StringTokenizer;
@@ -1012,13 +1013,13 @@ public class InAppBrowser extends CordovaPlugin {
 
                 //Add cookies given at the opening
                 if(initCookies != null) {
-                    Iterator<?> cookieDomain = initCookies.keys();
+                    Iterator<String> cookieDomain = initCookies.keys();
 
                     while (cookieDomain.hasNext()) {
-                        String domain = (String)cookieDomain.next();
+                        String domain = cookieDomain.next();
 
                         try {
-                            CookieManager.getInstance().setCookie(domain, (String)initCookies.get(domain).toString());
+                            CookieManager.getInstance().setCookie(domain, initCookies.getString(domain));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
