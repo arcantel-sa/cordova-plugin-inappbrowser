@@ -146,6 +146,7 @@ public class InAppBrowser extends CordovaPlugin {
     private String footerColor = "";
     private String beforeload = "";
     private String[] allowedSchemes;
+    private JSONObject initCookies;
 
     /**
      * Executes the request and returns PluginResult.
@@ -165,6 +166,8 @@ public class InAppBrowser extends CordovaPlugin {
             }
             final String target = t;
             final HashMap<String, String> features = parseFeature(args.optString(2));
+
+            initCookies = args.getJSONObject(3);
 
             LOG.d(LOG_TAG, "target = " + target);
 
@@ -1005,6 +1008,21 @@ public class InAppBrowser extends CordovaPlugin {
                 // Enable Thirdparty Cookies on >=Android 5.0 device
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
                     CookieManager.getInstance().setAcceptThirdPartyCookies(inAppWebView,true);
+                }
+
+                //Add cookies given at the opening
+                if(initCookies != null) {
+                    Iterator<?> cookieDomain = initCookies.keys();
+
+                    while (cookieDomain.hasNext()) {
+                        String domain = (String)cookieDomain.next();
+
+                        try {
+                            CookieManager.getInstance().setCookie(domain, (String)initCookies.get(domain).toString());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
 
                 inAppWebView.loadUrl(url);
